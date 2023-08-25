@@ -1,40 +1,20 @@
 package com.tms.repository;
+
+import com.tms.domain.Role;
 import com.tms.domain.UserInfo;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Repository
-public class UserRepository {
-    private final Map<Integer, UserInfo> users = new HashMap<>();
+public interface UserRepository extends JpaRepository<UserInfo, Integer> {
+    List<UserInfo> findAllByRole(Role role);
 
-    {
-        UserInfo userInfo1 = new UserInfo();
-        userInfo1.setId(1);
-        userInfo1.setFirstName("Amir");
-
-        UserInfo userInfo2 = new UserInfo();
-        userInfo2.setId(2);
-        userInfo2.setFirstName("Abama");
-
-        users.put(1,userInfo1);
-        users.put(2,userInfo2);
-    }
-
-    public List<UserInfo> findAll(){
-        return users.values().stream().toList();
-    }
-
-    public UserInfo findById(Integer id){
-        return users.get(id);
-    }
-
-    public void save(UserInfo userInfo){
-        users.put(userInfo.getId(),userInfo);
-    }
-
-    public void delete(Integer id){
-        users.remove(id);
-    }
+    //@Modifying - если мы изменяем Entity(INSERT, DELETE, UPDATE)
+    @Query(nativeQuery = true, value = "SELECT * FROM user_unfo WHERE last_name = :fn")
+    Optional<UserInfo> findUsersByLastName(String fn);
 }
